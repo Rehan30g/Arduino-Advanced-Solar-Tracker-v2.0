@@ -169,7 +169,7 @@ DATA:<state>,<pos>,<valL>,<valR>,<selisih>,<rataRata>,<millis>,<verifyCount>,<da
 
 ```
 solar-tracker/
-├── SolarTracker_V2.ino.ino   # Arduino firmware
+├── SolarTracker_V2.ino   # Arduino firmware
 └── debugger.py           # Python GUI + presentation tool
 ```
 
