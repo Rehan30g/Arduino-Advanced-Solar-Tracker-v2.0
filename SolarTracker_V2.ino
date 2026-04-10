@@ -760,8 +760,8 @@ void setup() {
 
   // AHAHAHAHAHAHAHA
   Serial.println(F("\n================================================================"));
-  Serial.println(F("  Credits: Rehan Christian and Melcior Zonggonau"));
-  Serial.println(F("  SOLAR TRACKER v2.0 — FSM EDITION | WACANA"));
+  Serial.println(F("  Credits: Rehan30g (Github)"));
+  Serial.println(F("  SOLAR TRACKER v2.0"));
   Serial.println(F("================================================================"));
   Serial.print(F(">>> Runtime default: "));
   Serial.print(getRunModeName(runMode));
