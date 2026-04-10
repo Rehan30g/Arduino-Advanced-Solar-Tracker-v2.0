@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-"""
-Solar Tracker Debugger — Python GUI
-Connects to Arduino via Serial and provides real-time visualization,
-LDR simulation sandbox, and state control.
-
-Kredit: Rehan Christian (perancang) dan Melcior Zonggonau (pembuat model fisik).
-
-Requirements: pip install pyserial
-"""
 
 import tkinter as tk
 from tkinter import ttk, scrolledtext
@@ -134,7 +125,7 @@ def _cli_tag(kind):
 
 def run_console_intro():
     print("================================================================", flush=True)
-    print("Credits: Rehan Christian and Melcior Zonggonau", flush=True)
+    print("Credits: Rehan30g (Github)", flush=True)
     print("SOLAR TRACKER v2.0 - FSM EDITION | WACANA", flush=True)
     print("================================================================", flush=True)
     print("", flush=True)
