@@ -175,6 +175,10 @@ solar-tracker/
 
 ---
 
+### Donate me!
+[![Donasi Lewat Saweria](https://img.shields.io/badge/Saweria-Donate-orange?logo=ko-fi&logoColor=white)](https://saweria.co/Rehan30g)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/rehan30g)
+
 ## License
 
 Built for a high school physics class. Do whatever you want with it.
