@@ -175,9 +175,6 @@ solar-tracker/
 
 ---
 
-## 📸 Screenshots
--
-
 ## License
 
 Built for a high school physics class. Do whatever you want with it.
