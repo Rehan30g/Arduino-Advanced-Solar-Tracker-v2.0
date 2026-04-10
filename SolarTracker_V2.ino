@@ -5,11 +5,7 @@
 
 /* ==============================================================
  *  ADVANCED SOLAR TRACKER v2.0
- *  WE ARE X-2
- *
- *  By: 
- *   - Rehan Christian (perancang, coder)
- *   - Melcior Zonggonau (yg buat model body fisik).
+ *  WE ARE X-2 ANGKATAN 39
  * ============================================================== */
 
 // ======================== CONFIGURASI ========================
@@ -43,7 +39,7 @@ const unsigned long VERIFY_INTERVAL_PROD  = 1000;
 const unsigned long HUNTING_INTERVAL_PROD = 50;
 */
 
-// --- FSM Timing Untuk DEMO, jika terpakai buat OPENHOUSE AL ---
+// --- FSM Timing Untuk DEMO ---
 const unsigned long SLEEP_INTERVAL_PROD   = 1000;
 const unsigned long IDLE_INTERVAL_PROD    = 500;
 const unsigned long VERIFY_INTERVAL_PROD  = 250;
@@ -75,7 +71,7 @@ const unsigned long DATA_SEND_INTERVAL     = 100;  // GUI/PRESENTATION only
 const unsigned long SENSOR_CACHE_MAX_AGE   = 120;
 
 
-// ======================== DO NOT TOUCH THIS CODE BELOW!!! ( except for rehan :} ) ========================
+// ======================== DO NOT TOUCH THIS CODE BELOW!!! ( except you a programmer :} ) ========================
 // ======================== ENUMS ========================
 
 enum State {
