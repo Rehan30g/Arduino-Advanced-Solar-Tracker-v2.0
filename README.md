@@ -1,6 +1,6 @@
 # ☀️ Advanced Solar Tracker v2.0 — FSM Edition
 
-> An Arduino-based solar tracker that actually thinks before it moves — built as a high school physics project by **Kolese Le Cocq d'Armandville Students**.
+> An Arduino-based solar tracker that actually thinks before it moves, built as a high school physics project by **Kolese Le Cocq d'Armandville Students**.
 
 ---
 
@@ -8,7 +8,7 @@
 
 It's a solar panel tracker that uses two LDR sensors to figure out where the light is coming from, then nudges a servo motor until the panel is pointing right at it. Simple idea, but the implementation goes a bit deeper than a basic `if left > right, turn left` loop.
 
-The firmware runs on a **Finite State Machine** with four distinct states, so the tracker isn't just blindly reacting to every sensor blip — it sleeps when it's dark, double-checks before it moves, and knows when to give up and go back to idle. There's also a **Python GUI** you can connect over Serial to watch everything in real time, simulate sensor values, and control the hardware without touching the code.
+The firmware runs on a **Finite State Machine** with four distinct states, so the tracker isn't just blindly reacting to every sensor blip, it sleeps when it's dark, double-checks before it moves, and knows when to give up and go back to idle. There's also a **Python GUI** you can connect over Serial to watch everything in real time, simulate sensor values, and control the hardware without touching the code.
 
 ---
 
