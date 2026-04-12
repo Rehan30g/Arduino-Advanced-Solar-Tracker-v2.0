@@ -15,25 +15,25 @@ The firmware runs on a **Finite State Machine** with four distinct states, so th
 ## Features
 
 ### Firmware
-- **4-state FSM** — `SLEEP`, `IDLE`, `VERIFY`, `HUNTING`. The tracker goes through these in a logical order instead of just reacting to raw sensor data
-- **AVR Watchdog sleep** — when it's dark and there's nothing to track, the Arduino actually puts itself to sleep at the hardware level to save power
-- **Oversampling** — each LDR is read 4 times per cycle and averaged, so a single noisy reading won't cause a false trigger
-- **Confirmation counters** — state transitions only happen after several consistent readings in a row. Shadows, clouds, quick flickers — none of that should cause the panel to start chasing nothing
-- **3 runtime modes** — `STANDALONE` (no PC needed), `GUI` (connected to the debugger), and `PRESENTATION` (faster timing for demos)
-- **Servo auto-detach** — when the tracker isn't actively moving, the servo gets detached so it's not drawing current or fighting against itself
-- **30-second hunt timeout** — if the tracker can't lock on within 30 seconds, it gives up and goes back to idle instead of spinning forever
-- **Pin 11 output** — follows the current state automatically, but can be manually overridden from the GUI if needed
-- **Full Serial command interface** — you can change almost anything at runtime without reflashing
+- **4-state FSM** - `SLEEP`, `IDLE`, `VERIFY`, `HUNTING`. The tracker goes through these in a logical order instead of just reacting to raw sensor data
+- **AVR Watchdog sleep** - when it's dark and there's nothing to track, the Arduino actually puts itself to sleep at the hardware level to save power
+- **Oversampling** - each LDR is read 4 times per cycle and averaged, so a single noisy reading won't cause a false trigger
+- **Confirmation counters** - state transitions only happen after several consistent readings in a row. Shadows, clouds, quick flickers — none of that should cause the panel to start chasing nothing
+- **3 runtime modes** - `STANDALONE` (no PC needed), `GUI` (connected to the debugger), and `PRESENTATION` (faster timing for demos)
+- **Servo auto-detach** - when the tracker isn't actively moving, the servo gets detached so it's not drawing current or fighting against itself
+- **30-second hunt timeout** - if the tracker can't lock on within 30 seconds, it gives up and goes back to idle instead of spinning forever
+- **Pin 11 output** - follows the current state automatically, but can be manually overridden from the GUI if needed
+- **Full Serial command interface** - you can change almost anything at runtime without reflashing
 
 ### Python Debugger
 - Live **servo position gauge** and **LDR bar graphs** so you can actually see what the hardware is doing
-- **LDR simulation sliders** — feed fake sensor values to the Arduino without physically covering the sensors. Really useful for testing edge cases
-- **Force-state buttons** — jump to any FSM state directly, great for demos
+- **LDR simulation sliders** - feed fake sensor values to the Arduino without physically covering the sensors. Really useful for testing edge cases
+- **Force-state buttons** - jump to any FSM state directly, great for demos
 - **Manual servo control** with attach/detach buttons
 - **Pin 11 override** toggle (AUTO / FORCE ON / FORCE OFF)
-- **Presentation Window** — a separate fullscreen display with a nice animated UI, sky gradient, smooth servo needle animation. Press `F11` to go fullscreen
-- **Heartbeat system** — if the GUI closes or crashes, the Arduino automatically falls back to standalone mode after a few seconds
-- **Xbox controller support** *(optional, needs `pygame`)* — left stick moves the servo, A button toggles Pin 11. Mostly for fun during demos
+- **Presentation Window** - a separate fullscreen display with a nice animated UI, sky gradient, smooth servo needle animation. Press `F11` to go fullscreen
+- **Heartbeat system** - if the GUI closes or crashes, the Arduino automatically falls back to standalone mode after a few seconds
+- **Xbox controller support** *(optional, needs `pygame`)* left stick moves the servo, A button toggles Pin 11. Mostly for fun during demos
 - ANSI-colored console output on terminals that support it
 
 ---
@@ -58,7 +58,7 @@ LDR_R ───┤ A1          ├──── Servo PWM → D9
          └─────────────┘
 ```
 
-> The two LDRs need a small physical divider between them — a piece of cardboard or foam works fine. Without it, both sensors see the same light level and the difference is always near zero.
+> The two LDRs need a small physical divider between them a piece of cardboard or foam works fine. Without it, both sensors see the same light level and the difference is always near zero.
 
 ---
 
@@ -67,12 +67,12 @@ LDR_R ───┤ A1          ├──── Servo PWM → D9
 All the tunable values are grouped at the top of `SENSORCAHAYA_V2.ino` so you don't have to dig through the code:
 
 ```cpp
-// Servo range — adjust these if your servo is mounted at a different angle
+// Servo range - adjust these if your servo is mounted at a different angle
 const bool  IS_FLIPPED  = true;
 const int   BATAS_MIN   = 82;    // min angle
 const int   BATAS_MAX   = 170;   // max angle
 
-// Light thresholds (0–1023, lower value = brighter light)
+// Light thresholds (0-1023, lower value = brighter light)
 const int   BATAS_BANGUN = 650;  // wake up when average brightness is below this
 const int   BATAS_TIDUR  = 850;  // go to sleep when average brightness is above this
 
@@ -84,7 +84,7 @@ const int   TOLERANSI_STOP = 20; // LDR difference at which the tracker consider
 const int   JUMLAH_SAMPLE = 4;
 ```
 
-There are also three timing profiles already written in the file — `PROD` for real deployment (slower, more power-efficient), `DEMO` for open house events (faster), and `PRESENTASI`. You just swap which block of constants is commented out.
+There are also three timing profiles already written in the file `PROD` for real deployment (slower, more power-efficient), `DEMO` for open house events (faster), and `PRESENTASI`. You just swap which block of constants is commented out.
 
 ---
 
