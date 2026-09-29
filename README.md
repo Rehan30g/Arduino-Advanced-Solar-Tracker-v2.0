@@ -1,6 +1,6 @@
 # ☀️ Advanced Solar Tracker v2.0 — FSM Edition
 
-> An Arduino-based solar tracker that actually thinks before it moves, built as a high school physics project by **Kolese Le Cocq d'Armandville Students**.
+> Arduino solar tracker that actually thinks before it moves. Made for a high school physics project by **Kolese Le Cocq d'Armandville Students**.
 
 ![Arduino](https://img.shields.io/badge/Arduino-Uno%20%2F%20Nano-00979D?logo=arduino&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)
@@ -10,100 +10,95 @@
 
 ## What is this?
 
-It's a solar panel tracker that uses two LDR sensors to figure out where the light is coming from, then nudges a servo motor until the panel is pointing right at it. Simple idea, but the implementation goes a bit deeper than a basic `if left > right, turn left` loop.
+Two LDRs figure out where the light's coming from, a servo turns the panel toward it. Pretty simple idea. The code just goes a bit further than the usual `if left > right, turn left` loop.
 
-The firmware runs on a **Finite State Machine** with four distinct states, so the tracker isn't just blindly reacting to every sensor blip. It sleeps when it's dark, double-checks before it moves, and knows when to give up and go back to idle. There's also a **Python GUI** you can connect over Serial to watch everything in real time, simulate sensor values, and control the hardware without touching the code.
+It runs on a **Finite State Machine** with 4 states, so it doesn't freak out every time a sensor blips. It sleeps when it's dark, double-checks before moving, and gives up if it can't find the light. There's also a **Python GUI** you can plug in over Serial to watch stuff live, fake sensor values, and control things without reflashing.
 
 ---
 
 ## Features
 
 ### Firmware
-- **4-state FSM**: `SLEEP`, `IDLE`, `VERIFY`, `HUNTING`. The tracker moves through these in a logical order instead of just reacting to raw sensor data
-- **AVR Watchdog sleep**: when it's dark and there's nothing to track, the Arduino actually puts itself to sleep at the hardware level to save power
-- **Oversampling**: each LDR is read 4 times per cycle and averaged (with the first throwaway read discarded), so a single noisy reading won't cause a false trigger
-- **Confirmation counters**: state transitions only happen after several consistent readings in a row. Shadows, clouds, quick flickers, none of that should send the panel chasing nothing
-- **3 runtime modes**: `STANDALONE` (no PC needed), `GUI` (connected to the debugger), and `PRESENTATION` (faster timing for demos)
-- **Servo auto-detach**: when the tracker isn't actively moving, the servo gets detached so it's not drawing current or jittering
-- **Safety exits**: a 30-second hunt timeout, plus an early exit if the servo hits its angle limit, so it never spins forever
-- **Pin 11 output**: stays ON whenever the tracker is awake and turns OFF in `SLEEP`. Can be manually overridden from the GUI
-- **Full Serial command interface**: change almost anything at runtime without reflashing
+- **4-state FSM**: `SLEEP`, `IDLE`, `VERIFY`, `HUNTING`. Goes through them in order instead of reacting to raw sensor noise
+- **AVR Watchdog sleep**: when it's dark the Arduino actually sleeps at the hardware level. saves power
+- **Oversampling**: each LDR gets read 4 times and averaged (first read thrown away), so one noisy reading won't mess anything up
+- **Confirmation counters**: needs a few consistent readings in a row before switching states. clouds, shadows, flickers, whatever, it mostly ignores them
+- **3 run modes**: `STANDALONE` (no PC), `GUI` (hooked to the debugger), `PRESENTATION` (faster timing for demos)
+- **Servo auto-detach**: servo gets detached when it's not moving so it doesn't jitter or waste current
+- **Safety exits**: 30s hunt timeout, and it also stops if the servo hits its angle limit. no infinite spinning
+- **Pin 11 output**: ON while the tracker is awake, OFF in `SLEEP`. can be overridden from the GUI
+- **Serial commands**: change most things at runtime, no reflash needed
 
 ### Python Debugger
-- Live **servo position gauge** and **LDR bar graphs** so you can actually see what the hardware is doing
-- **LDR simulation sliders**: feed fake sensor values to the Arduino without physically covering the sensors. Really useful for testing edge cases
-- **Force-state buttons**: jump to any FSM state directly, great for demos
-- **Manual servo control** with attach/detach buttons
-- **Pin 11 override** toggle (AUTO / FORCE ON / FORCE OFF)
-- **Presentation Window**: a separate display with an animated UI, sky gradient, and smooth servo needle animation. Press `F11` to go fullscreen
-- **Heartbeat system**: if the GUI closes or crashes, the Arduino automatically falls back to standalone mode after about 4 seconds
-- **Xbox controller support** *(optional, needs `pygame`)*: left stick moves the servo, A button toggles Pin 11. Mostly for fun during demos
-- ANSI-colored console output on terminals that support it
+- Live **servo gauge** + **LDR bar graphs**
+- **LDR simulation sliders**: fake sensor values without covering the actual sensors. super handy for testing edge cases
+- **Force-state buttons**: jump to any state, nice for demos
+- **Manual servo control** + attach/detach buttons
+- **Pin 11 override** (AUTO / FORCE ON / FORCE OFF)
+- **Presentation Window**: separate animated display with a sky gradient and a smooth servo needle. `F11` for fullscreen
+- **Heartbeat**: if the GUI closes or crashes, the Arduino goes back to standalone after ~4s
+- **Xbox controller support** *(optional, needs `pygame`)*: left stick = servo, A = toggle Pin 11. mostly just for fun tbh
+- Colored console output if your terminal supports it
 
 ---
 
 ## Hardware
 
-### What you'll need
+### Stuff you need
 
-- 1× **Arduino Uno or Nano**
-- 1× **Servo motor** (a small one like SG90 / MG90S is enough for a light panel)
-- 2× **LDR** (light dependent resistor)
-- 2× **fixed resistors** for the LDR dividers (**10 kΩ** is a good starting point)
-- 1× **LED + ~220 Ω resistor**, *or* a relay module, for the Pin 11 output *(optional)*
-- A small **divider wall** between the two LDRs (cardboard, foam, a 3D-printed fin, anything opaque)
-- Jumper wires and a breadboard
+- Arduino **Uno or Nano**
+- 1 **servo** (SG90 / MG90S is fine for a small panel)
+- 2 **LDRs**
+- 2 **resistors** for the LDRs (**10 kΩ** is a good start)
+- LED + ~220 Ω resistor, or a relay module, for Pin 11 *(optional)*
+- Something opaque to put **between** the LDRs (cardboard, foam, whatever)
+- Jumper wires + breadboard
 
-### Pin map at a glance
+### Pins
 
 | Component | Arduino Pin |
 |---|---|
 | Servo signal | **D9** |
 | Left LDR | **A0** |
 | Right LDR | **A1** |
-| Output indicator (LED / relay) | **D11** |
+| Output (LED / relay) | **D11** |
 
-### Wiring it up, step by step
+### Wiring
 
-**1. Set up the power rails first.**
-Run the Arduino's **5V** to the breadboard's `+` rail and **GND** to the `–` rail. Everything below plugs into these two rails, so getting them right first saves a lot of confusion later.
+**1. Power rails**
+5V to the `+` rail, GND to the `–` rail. do this first, everything else plugs into them.
 
-**2. Wire the left LDR (A0).**
-An Arduino can't read resistance directly, so each LDR goes into a simple *voltage divider* with a fixed resistor:
-- Connect one leg of the fixed resistor to **5V**.
-- Connect the other leg of that resistor to one leg of the LDR, and run a jumper from that shared point to **A0**.
-- Connect the remaining leg of the LDR to **GND**.
+**2. Left LDR (A0)**
+LDR + resistor voltage divider thing. resistor to 5V, LDR to GND, middle bit goes to A0. that's it.
 
-The firmware expects **lower readings = brighter light**. With the LDR on the GND side like this, more light lowers the LDR's resistance, which pulls the voltage at A0 down. That's exactly what the code wants.
+(yes the LDR goes on the GND side, the code wants lower = brighter. don't ask.)
 
-**3. Wire the right LDR (A1).**
-Same thing, mirrored: fixed resistor to **5V**, LDR to **GND**, and the junction between them to **A1**. Try to use the same resistor value on both sides so the two sensors are a fair match.
+**3. Right LDR (A1)**
+Same as the left one but the middle goes to A1. Use the same resistor value on both or they won't match.
 
-**4. Connect the servo (D9).**
-A servo has three wires:
-- **Signal** (usually orange/yellow) → **D9**
-- **Power** (usually red) → **5V**
-- **Ground** (usually brown/black) → **GND**
+**4. Servo (D9)**
+- signal (orange/yellow) → D9
+- power (red) → 5V
+- ground (brown/black) → GND
 
-**5. (Optional) Hook up the Pin 11 output (D11).**
-For a status LED: **D11 → 220 Ω resistor → LED long leg**, and the LED's short leg → **GND**. For a relay module, connect its `IN` pin to **D11** and power it from 5V / GND. It'll switch ON while the tracker is awake and OFF when it goes to sleep.
+**5. Pin 11 output (D11)** *(optional)*
+LED: D11 → 220 Ω → LED long leg, short leg → GND.
+Relay module: `IN` → D11, plus 5V and GND. It's on while the tracker is awake, off when it sleeps.
 
-**6. Add the divider wall.**
-Stand a small opaque wall *between* the two LDRs, perpendicular to the panel. This is what makes the whole thing work: when the sun is off to one side, the wall shades one sensor, creating the difference the tracker reacts to. Without it, both sensors see the same light and the difference stays near zero.
+**6. The divider wall**
+Put your cardboard/foam/whatever between the two LDRs, sticking straight up from the panel. This is kinda the whole trick: when the sun's off to one side, the wall shades one LDR and the tracker sees a difference. No wall = both LDRs read the same = nothing happens.
 
-### Quick sanity checks
+### If something's off
 
-> 💡 **Panel moves the wrong way?** Flip `IS_FLIPPED` in the config instead of re-wiring. It just reverses the servo direction.
-
-> 💡 **Brightness readings go *up* in the light instead of down?** You swapped the LDR and the resistor. Swap them back so the LDR sits on the GND side.
-
-> ⚡ **Servo twitching or the Arduino randomly resetting?** Servos pull current spikes when they move. If the 5V pin can't keep up (common with bigger servos or USB power), power the servo from a separate 5V supply and **connect that supply's GND to the Arduino's GND**. Shared ground is a must, or the signal won't make sense to the servo.
+- **Panel turns the wrong way?** Just flip `IS_FLIPPED` in the config. no rewiring needed.
+- **Readings go *up* in the light?** You swapped the LDR and resistor. LDR goes on the GND side.
+- **Servo twitching / Arduino randomly resetting?** Servo's probably pulling too much current (happens a lot on USB power or with bigger servos). Give it its own 5V supply and **connect that GND to the Arduino GND**. Shared ground is required, otherwise the signal won't work.
 
 ---
 
 ## Configuration
 
-All the tunable values are grouped at the top of `SolarTracker_V2.ino` so you don't have to dig through the code:
+Everything you'd want to tweak is at the top of `SolarTracker_V2.ino`:
 
 ```cpp
 // Servo range - adjust these if your servo is mounted at a different angle
@@ -125,15 +120,15 @@ const int   JUMLAH_SAMPLE = 4;
 
 ### Timing profiles
 
-Each run mode has its own check intervals, defined right below the thresholds:
+Each run mode has its own intervals, right under the thresholds:
 
-| Profile | Used when | Vibe |
+| Profile | When | Notes |
 |---|---|---|
-| `*_PROD` | Standalone mode | Currently set to the fast **demo** timings. The slower, more power-efficient "real deployment" values are kept in a commented-out block right above it, so just swap them if you're leaving it outside for real |
-| `*_GUI` | Connected to the debugger | Relaxed intervals so the logs stay readable |
-| `*_PRES` | Presentation mode | Snappy timings for showing it off live |
+| `*_PROD` | Standalone | Currently has the fast **demo** timings. The slower "real" ones are commented out right above it, swap them in if you're actually leaving it outside |
+| `*_GUI` | Hooked to the debugger | Slower so the logs are readable |
+| `*_PRES` | Presentation mode | Fast, for showing it off |
 
-The confirmation targets (`VERIFY_COUNT_TARGET`, `DARK_CONFIRM_TARGET`, etc.) and `HUNTING_TIMEOUT` live in the `Are YOU safe?` section if you want the tracker to be more or less cautious.
+Want it more/less careful? Check `VERIFY_COUNT_TARGET`, `DARK_CONFIRM_TARGET`, `HUNTING_TIMEOUT` etc. in the `Are YOU safe?` section.
 
 ---
 
@@ -153,14 +148,14 @@ stateDiagram-v2
     HUNTING --> SLEEP: went dark
 ```
 
-| State | What's happening |
+| State | What's going on |
 |---|---|
-| `SLEEP` | It's dark. In standalone mode the Arduino drops into hardware sleep and only wakes up occasionally to check if the light came back. Pin 11 turns off. |
-| `IDLE` | There's light and the panel is in position. The servo is detached. The tracker is just watching for any light imbalance. |
-| `VERIFY` | One LDR is brighter than the other. Before moving anything, the tracker waits for 3 consecutive confirmations to make sure it's not just a flicker. If the difference disappears, it's a false alarm and it goes back to `IDLE`. |
-| `HUNTING` | Actively rotating the servo toward the brighter side, one degree at a time, until both LDRs read roughly the same. It bails out after 30 seconds, or if the servo hits the end of its range. |
+| `SLEEP` | It's dark. In standalone mode the Arduino hardware-sleeps and wakes up every now and then to check for light. Pin 11 off. |
+| `IDLE` | There's light, panel's in position, servo detached. Just waiting for one side to get brighter. |
+| `VERIFY` | One LDR is brighter. Waits for 3 confirmations in a row before moving. If the difference goes away, false alarm, back to `IDLE`. |
+| `HUNTING` | Turning toward the brighter side, 1 degree at a time, until both LDRs roughly match. Gives up after 30s or if the servo hits its limit. |
 
-If it gets dark during `VERIFY` or `HUNTING`, the tracker skips straight to `SLEEP` instead of chasing light that isn't there anymore.
+If it gets dark during `VERIFY` or `HUNTING`, it just goes straight to `SLEEP`.
 
 ---
 
@@ -168,11 +163,11 @@ If it gets dark during `VERIFY` or `HUNTING`, the tracker skips straight to `SLE
 
 ### Flashing the Arduino
 
-You'll need Arduino IDE 1.8+ (or Arduino CLI). The only library used is `Servo.h`, which comes built-in.
+Arduino IDE 1.8+ (or Arduino CLI). Only library is `Servo.h`, which is built-in.
 
 1. Open `SolarTracker_V2.ino`
-2. Tweak the config constants at the top for your hardware (servo range, light thresholds)
-3. Upload to your Arduino Uno or Nano
+2. Tweak the config at the top for your setup (servo range, light thresholds)
+3. Upload to your Uno / Nano
 
 ### Running the Python Debugger
 
@@ -185,13 +180,13 @@ pip install pygame   # optional, only if you want Xbox controller support
 python debugger.py
 ```
 
-Pick your COM port from the dropdown and hit **Connect**. The Arduino automatically switches to GUI mode once it detects the heartbeat signal.
+Pick your COM port, hit **Connect**. The Arduino switches to GUI mode by itself once it gets the heartbeat.
 
 ---
 
 ## Serial Protocol
 
-The Arduino talks at `115200` baud. All log lines from the firmware start with `LOG:` so they're easy to filter out if you're building your own tooling.
+`115200` baud. Every log line from the firmware starts with `LOG:` so you can filter them out easily if you're making your own tool.
 
 ### Commands you can send (PC → Arduino)
 
@@ -209,7 +204,7 @@ The Arduino talks at `115200` baud. All log lines from the firmware start with `
 
 ### Telemetry (Arduino → PC)
 
-When in GUI or Presentation mode, the Arduino sends a `DATA:` packet every 100 ms:
+In GUI or Presentation mode, the Arduino sends a `DATA:` packet every 100 ms:
 
 ```
 DATA:<state>,<pos>,<valL>,<valR>,<selisih>,<rataRata>,<millis>,<verifyCount>,<darkCount>,<brightCount>,<attached>,<simMode>,<pin11Mode>,<pin11State>,<runMode>,<sleepKind>,<sensorAgeMs>
@@ -217,7 +212,7 @@ DATA:<state>,<pos>,<valL>,<valR>,<selisih>,<rataRata>,<millis>,<verifyCount>,<da
 
 ---
 
-## File Structure
+## Files
 
 | File | What it is |
 |---|---|
@@ -234,4 +229,4 @@ DATA:<state>,<pos>,<valL>,<valR>,<selisih>,<rataRata>,<millis>,<verifyCount>,<da
 
 ## License
 
-Released under the [MIT License](LICENSE). Built for a high school physics class, so feel free to learn from it, remix it, and build your own.
+[MIT](LICENSE). Made for a physics class, do whatever you want with it.
